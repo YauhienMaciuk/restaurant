@@ -1,0 +1,33 @@
+package com.ingroup.restaurant.config;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+import com.ingroup.restaurant.api.Dish;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+
+import java.util.Map;
+
+@SpringBootTest
+class DishScorePropertiesIT {
+
+    @Autowired
+    private DishScoreProperties properties;
+
+    @ParameterizedTest
+    @EnumSource(Dish.class)
+    void everyDishHasAScoreForEveryHour(Dish dish) {
+        assertThat(properties.scores().get(dish)).containsOnlyKeys(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,
+                14, 15, 16, 17, 18, 19, 20, 21, 22, 23);
+    }
+
+    @Test
+    void shippedScoresAreWithinRange() {
+        assertThat(properties.scores().values())
+                .flatExtracting(Map::values)
+                .allSatisfy(score -> assertThat(score).isBetween(0, 10));
+    }
+}
