@@ -1,26 +1,37 @@
 package com.ingroup.restaurant.controller;
 
+import com.ingroup.restaurant.api.Dish;
 import com.ingroup.restaurant.api.DishSuitabilityRequest;
 import com.ingroup.restaurant.api.DishSuitabilityResponse;
 import com.ingroup.restaurant.service.DishSuitabilityService;
 import jakarta.validation.Valid;
-import java.time.LocalTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalTime;
+
 @RestController
 public class DishSuitabilityController {
 
-    private final DishSuitabilityService service;
+    private static final Logger log = LoggerFactory.getLogger(DishSuitabilityController.class);
 
-    public DishSuitabilityController(DishSuitabilityService service) {
-        this.service = service;
+    private final DishSuitabilityService dishSuitabilityService;
+
+    public DishSuitabilityController(DishSuitabilityService dishSuitabilityService) {
+        this.dishSuitabilityService = dishSuitabilityService;
     }
 
     @PostMapping("/dish-suitability")
     public DishSuitabilityResponse dishSuitability(@Valid @RequestBody DishSuitabilityRequest request) {
-        int score = service.score(LocalTime.parse(request.time()), request.dish());
+        String time = request.time();
+        Dish dish = request.dish();
+        int score = dishSuitabilityService.score(LocalTime.parse(time), dish);
+
+        log.info("Dish suitability: dish={}, time={}, score={}", dish, time, score);
+
         return new DishSuitabilityResponse(score);
     }
 }

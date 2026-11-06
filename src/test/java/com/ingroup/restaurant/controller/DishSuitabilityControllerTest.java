@@ -21,7 +21,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
-
 @WebMvcTest(DishSuitabilityController.class)
 class DishSuitabilityControllerTest {
 

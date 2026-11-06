@@ -2,21 +2,39 @@ package com.ingroup.restaurant.service;
 
 import com.ingroup.restaurant.api.Dish;
 import com.ingroup.restaurant.config.DishScoreProperties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
 import java.time.LocalTime;
 import java.util.Map;
-import org.springframework.stereotype.Service;
 
 @Service
 public class DishSuitabilityService {
 
-    private final DishScoreProperties properties;
+    private static final Logger log = LoggerFactory.getLogger(DishSuitabilityService.class);
 
-    public DishSuitabilityService(DishScoreProperties properties) {
-        this.properties = properties;
+    private final DishScoreProperties dishScoreProperties;
+
+    public DishSuitabilityService(DishScoreProperties dishScoreProperties) {
+        this.dishScoreProperties = dishScoreProperties;
+        log.info("Loaded dish scores for {} dishes: {}",
+                dishScoreProperties.scores().size(),
+                dishScoreProperties.scores().keySet()
+        );
     }
 
-    /** Returns the configured score for the dish at the hour of the given time, or 0 if not configured. */
+    /**
+     * Returns the configured score for the dish at the hour of the given time, or 0 if not configured.
+     */
     public int score(LocalTime time, Dish dish) {
-        return properties.scores().getOrDefault(dish, Map.of()).getOrDefault(time.getHour(), 0);
+        int hour = time.getHour();
+        Integer score = dishScoreProperties.scores().getOrDefault(dish, Map.of()).get(hour);
+        if (score == null) {
+            log.debug("No score configured for dish={} hour={}, using 0", dish, hour);
+            return 0;
+        }
+
+        return score;
     }
 }
