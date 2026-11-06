@@ -27,12 +27,12 @@ class DishSuitabilityControllerIT {
     }
 
     @ParameterizedTest
-    @CsvSource({"09:30,Pancakes", "12:30,Chicken", "15:00,IceCream"})
-    void validRequestReturnsScore(String time, String dish) {
+    @CsvSource({"09:30,Pancakes,10", "12:30,Chicken,10", "15:00,IceCream,10", "03:00,Pancakes,0", "23:00,IceCream,0"})
+    void validRequestReturnsScore(String time, String dish, int score) {
         ResponseEntity<String> response = post("{\"time\":\"" + time + "\",\"dish\":\"" + dish + "\"}");
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isEqualToIgnoringWhitespace("{\"score\":0}");
+        assertThat(response.getBody()).isEqualToIgnoringWhitespace("{\"score\":" + score + "}");
     }
 
     @Test

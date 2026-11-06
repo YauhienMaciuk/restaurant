@@ -2,3 +2,8 @@ spring:
   jackson:
     mapper:
       accept-case-insensitive-enums: true
+  config:
+    import:
+      - classpath:dishes/pancakes.yml
+      - classpath:dishes/chicken.yml
+      - classpath:dishes/icecream.yml
