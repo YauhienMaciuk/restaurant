@@ -14,7 +14,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(
+        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+        properties = {
+                "spring.config.import[0]=classpath:test-dishes/pancakes.yml",
+                "spring.config.import[1]=classpath:test-dishes/chicken.yml",
+                "spring.config.import[2]=classpath:test-dishes/icecream.yml"
+        })
 class DishSuitabilityControllerIT {
 
     @Autowired
@@ -27,7 +33,7 @@ class DishSuitabilityControllerIT {
     }
 
     @ParameterizedTest
-    @CsvSource({"09:30,Pancakes,10", "12:30,Chicken,10", "15:00,IceCream,10", "03:00,Pancakes,0", "23:00,IceCream,0"})
+    @CsvSource({"09:30,Pancakes,7", "12:30,Chicken,5", "15:00,IceCream,3", "03:00,Pancakes,0", "23:00,IceCream,0"})
     void validRequestReturnsScore(String time, String dish, int score) {
         ResponseEntity<String> response = post("""
                 {"time": "%s", "dish": "%s"}
