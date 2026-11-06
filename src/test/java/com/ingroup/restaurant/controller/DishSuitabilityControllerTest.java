@@ -73,15 +73,15 @@ class DishSuitabilityControllerTest {
     }
 
     @Test
-    void blankDishReturnsDishNotAllowed() throws Exception {
+    void blankDishReturnsDishRequired() throws Exception {
         postJson("""
                 {"time": "09:30", "dish": ""}
                 """)
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errors[0].field").value("dish"))
-                .andExpect(jsonPath("$.errors[0].code").value("DISH_NOT_ALLOWED"))
+                .andExpect(jsonPath("$.errors[0].code").value("DISH_REQUIRED"))
                 .andExpect(jsonPath("$.errors[0].message")
-                        .value("dish '' is not allowed. Allowed dishes: Pancakes, Chicken, IceCream"));
+                        .value("dish is required. Allowed dishes: Pancakes, Chicken, IceCream"));
     }
 
     @Test
@@ -140,6 +140,22 @@ class DishSuitabilityControllerTest {
                 .andExpect(jsonPath("$.code").value("MALFORMED_REQUEST"))
                 .andExpect(jsonPath("$.message").value("Request body is missing or is not valid JSON"))
                 .andExpect(jsonPath("$.errors").isEmpty());
+    }
+
+    @Test
+    void invalidTimeAndDishAreBothReported() throws Exception {
+        postJson("""
+                {"time": "99:39", "dish": " PancakeS1 "}
+                """)
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("VALIDATION_FAILED"))
+                .andExpect(jsonPath("$.errors.length()").value(2))
+                .andExpect(jsonPath("$.errors[0].field").value("dish"))
+                .andExpect(jsonPath("$.errors[0].code").value("DISH_NOT_ALLOWED"))
+                .andExpect(jsonPath("$.errors[1].field").value("time"))
+                .andExpect(jsonPath("$.errors[1].code").value("INVALID_TIME_FORMAT"));
+
+        verifyNoInteractions(service);
     }
 
     @ParameterizedTest

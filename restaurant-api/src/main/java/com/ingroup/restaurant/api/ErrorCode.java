@@ -16,6 +16,7 @@ public enum ErrorCode {
         public static final String TIME_REQUIRED = "TIME_REQUIRED";
         public static final String INVALID_TIME_FORMAT = "INVALID_TIME_FORMAT";
         public static final String DISH_REQUIRED = "DISH_REQUIRED";
+        public static final String DISH_NOT_ALLOWED = "DISH_NOT_ALLOWED";
 
         private Names() {
         }

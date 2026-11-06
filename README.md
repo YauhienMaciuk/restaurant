@@ -19,7 +19,7 @@ curl -X POST localhost:8080/dish-suitability \
 
 Invalid input returns `400` with a body like
 `{"code":"VALIDATION_FAILED","message":"...","errors":[{"field":"time","code":"INVALID_TIME_FORMAT","message":"..."}]}`.
-An unknown dish returns `DISH_NOT_ALLOWED` and lists the allowed dishes.
+A missing or blank dish returns `DISH_REQUIRED`; an unknown dish returns `DISH_NOT_ALLOWED`. Both list the allowed dishes.
 
 `GET /health` returns `{"status":"UP"}`.
 
@@ -29,9 +29,12 @@ Requires Docker, or JDK 17 for a local run.
 
 ```bash
 docker-compose up --build        # service on http://localhost:8080
+docker-compose down              # stop and remove the container (from another terminal)
 ./gradlew test                   # unit and integration tests (*IT)
 ./gradlew bootRun                # run locally without Docker
 ```
+
+To stop the service, press `Ctrl+C` in the terminal where it runs, or run `docker-compose down` from the project folder. If it was started in the background (`docker-compose up -d`), use `docker-compose down`. `Ctrl+C` stops the container but keeps it, and `down` also removes it.
 
 ## Project structure
 

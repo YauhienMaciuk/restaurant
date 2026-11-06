@@ -1,7 +1,4 @@
 spring:
-  jackson:
-    mapper:
-      accept-case-insensitive-enums: true
   config:
     import:
       - classpath:dishes/pancakes.yml
