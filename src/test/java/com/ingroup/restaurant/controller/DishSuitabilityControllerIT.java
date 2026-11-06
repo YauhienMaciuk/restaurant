@@ -29,33 +29,54 @@ class DishSuitabilityControllerIT {
     @ParameterizedTest
     @CsvSource({"09:30,Pancakes,10", "12:30,Chicken,10", "15:00,IceCream,10", "03:00,Pancakes,0", "23:00,IceCream,0"})
     void validRequestReturnsScore(String time, String dish, int score) {
-        ResponseEntity<String> response = post("{\"time\":\"" + time + "\",\"dish\":\"" + dish + "\"}");
+        ResponseEntity<String> response = post("""
+                {"time": "%s", "dish": "%s"}
+                """.formatted(time, dish));
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isEqualToIgnoringWhitespace("{\"score\":" + score + "}");
+        assertThat(response.getBody()).isEqualToIgnoringWhitespace("""
+                {"score": %d}
+                """.formatted(score));
     }
 
     @Test
     void dishIsCaseInsensitive() {
-        ResponseEntity<String> response = post("{\"time\":\"09:30\",\"dish\":\"icecream\"}");
+        ResponseEntity<String> response = post("""
+                {"time": "09:30", "dish": "icecream"}
+                """);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
     @Test
     void unknownDishReturns400() {
-        ResponseEntity<String> response = post("{\"time\":\"09:30\",\"dish\":\"Pizza\"}");
+        ResponseEntity<String> response = post("""
+                {"time": "09:30", "dish": "Pizza"}
+                """);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-        assertThat(response.getBody()).isEqualToIgnoringWhitespace(
-                "{\"code\":\"VALIDATION_FAILED\",\"message\":\"Request validation failed\",\"errors\":["
-                        + "{\"field\":\"dish\",\"code\":\"DISH_NOT_ALLOWED\","
-                        + "\"message\":\"dish 'Pizza' is not allowed. Allowed dishes: Pancakes, Chicken, IceCream\"}]}");
+        assertThat(response.getBody()).isEqualToIgnoringWhitespace("""
+                {
+                  "code": "VALIDATION_FAILED",
+                  "message": "Request validation failed",
+                  "errors": [
+                    {
+                      "field": "dish",
+                      "code": "DISH_NOT_ALLOWED",
+                      "message": "dish 'Pizza' is not allowed. Allowed dishes: Pancakes, Chicken, IceCream"
+                    }
+                  ]
+                }
+                """);
     }
 
     @Test
     void invalidTimeReturns400() {
-        assertThat(post("{\"time\":\"25:99\",\"dish\":\"Pancakes\"}").getStatusCode())
+        ResponseEntity<String> response = post("""
+                {"time": "25:99", "dish": "Pancakes"}
+                """);
+
+        assertThat(response.getStatusCode())
                 .isEqualTo(HttpStatus.BAD_REQUEST);
     }
 

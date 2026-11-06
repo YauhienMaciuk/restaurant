@@ -38,7 +38,9 @@ class DishSuitabilityControllerTest {
     void returnsScoreFromService() throws Exception {
         when(service.score(any(), any())).thenReturn(7);
 
-        postJson("{\"time\":\"09:30\",\"dish\":\"Pancakes\"}")
+        postJson("""
+                {"time": "09:30", "dish": "Pancakes"}
+                """)
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.score").value(7));
 
@@ -50,13 +52,17 @@ class DishSuitabilityControllerTest {
     void dishIsCaseInsensitive(String dish) throws Exception {
         when(service.score(any(), any())).thenReturn(1);
 
-        postJson("{\"time\":\"09:30\",\"dish\":\"" + dish + "\"}")
+        postJson("""
+                {"time": "09:30", "dish": "%s"}
+                """.formatted(dish))
                 .andExpect(status().isOk());
     }
 
     @Test
     void unknownDishReturnsDishNotAllowed() throws Exception {
-        postJson("{\"time\":\"09:30\",\"dish\":\"Pizza\"}")
+        postJson("""
+                {"time": "09:30", "dish": "Pizza"}
+                """)
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value("VALIDATION_FAILED"))
                 .andExpect(jsonPath("$.errors.length()").value(1))
@@ -68,7 +74,9 @@ class DishSuitabilityControllerTest {
 
     @Test
     void blankDishReturnsDishNotAllowed() throws Exception {
-        postJson("{\"time\":\"09:30\",\"dish\":\"\"}")
+        postJson("""
+                {"time": "09:30", "dish": ""}
+                """)
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errors[0].field").value("dish"))
                 .andExpect(jsonPath("$.errors[0].code").value("DISH_NOT_ALLOWED"))
@@ -78,7 +86,9 @@ class DishSuitabilityControllerTest {
 
     @Test
     void missingDishReturnsDishRequired() throws Exception {
-        postJson("{\"time\":\"09:30\"}")
+        postJson("""
+                {"time": "09:30"}
+                """)
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value("VALIDATION_FAILED"))
                 .andExpect(jsonPath("$.errors.length()").value(1))
@@ -90,7 +100,9 @@ class DishSuitabilityControllerTest {
 
     @Test
     void invalidTimeReturnsInvalidTimeFormat() throws Exception {
-        postJson("{\"time\":\"25:99\",\"dish\":\"Pancakes\"}")
+        postJson("""
+                {"time": "25:99", "dish": "Pancakes"}
+                """)
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errors.length()").value(1))
                 .andExpect(jsonPath("$.errors[0].field").value("time"))
@@ -100,7 +112,9 @@ class DishSuitabilityControllerTest {
 
     @Test
     void missingTimeReturnsTimeRequired() throws Exception {
-        postJson("{\"dish\":\"Pancakes\"}")
+        postJson("""
+                {"dish": "Pancakes"}
+                """)
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errors[0].field").value("time"))
                 .andExpect(jsonPath("$.errors[0].code").value("TIME_REQUIRED"));
@@ -108,7 +122,9 @@ class DishSuitabilityControllerTest {
 
     @Test
     void everyInvalidFieldIsReportedSortedByField() throws Exception {
-        postJson("{\"time\":\"25:99\"}")
+        postJson("""
+                {"time": "25:99"}
+                """)
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errors.length()").value(2))
                 .andExpect(jsonPath("$.errors[0].field").value("dish"))
@@ -128,15 +144,24 @@ class DishSuitabilityControllerTest {
 
     @ParameterizedTest
     @ValueSource(strings = {
-            "{\"time\":\"09:30\",\"dish\":\"Pizza\"}",
-            "{\"time\":\"09:30\",\"dish\":\"\"}",
-            "{\"time\":\"09:30\",\"dish\":null}",
-            "{\"time\":\"9:30\",\"dish\":\"Pancakes\"}",
-            "{\"time\":\"24:00\",\"dish\":\"Pancakes\"}",
-            "{\"time\":\"12:60\",\"dish\":\"Chicken\"}",
-            "{\"dish\":\"IceCream\"}",
-            "{\"time\":\"09:30\"}",
-            "{}",
+            """
+                    {"time": "09:30", "dish": "Pizza"}""",
+            """
+                    {"time": "09:30", "dish": ""}""",
+            """
+                    {"time": "09:30", "dish": null}""",
+            """
+                    {"time": "9:30", "dish": "Pancakes"}""",
+            """
+                    {"time": "24:00", "dish": "Pancakes"}""",
+            """
+                    {"time": "12:60", "dish": "Chicken"}""",
+            """
+                    {"dish": "IceCream"}""",
+            """
+                    {"time": "09:30"}""",
+            """
+                    {}""",
             "not json"
     })
     void invalidRequestReturns400(String body) throws Exception {

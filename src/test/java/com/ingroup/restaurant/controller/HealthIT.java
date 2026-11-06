@@ -23,7 +23,9 @@ class HealthIT {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getHeaders().getContentType()).isNotNull();
         assertThat(response.getHeaders().getContentType().isCompatibleWith(MediaType.APPLICATION_JSON)).isTrue();
-        assertThat(response.getBody()).isEqualToIgnoringWhitespace("{\"status\":\"UP\"}");
+        assertThat(response.getBody()).isEqualToIgnoringWhitespace("""
+                {"status": "UP"}
+                """);
     }
 
     @Test
