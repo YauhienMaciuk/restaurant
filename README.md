@@ -68,7 +68,7 @@ An hour or dish that is not listed scores 0. Invalid values (hour outside 0-23, 
 
 To add a dish:
 
-1. Add a value to the `Dish` enum.
+1. Add a value to the `Dish` enum with the name clients send, e.g. `ICE_CREAM("IceCream")`.
 2. Add `src/main/resources/dishes/<dish>.yml` with a score for every hour.
 3. Import the file in `application.yml` (`spring.config.import`).
 

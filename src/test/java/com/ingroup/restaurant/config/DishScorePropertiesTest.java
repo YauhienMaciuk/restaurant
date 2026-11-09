@@ -19,8 +19,8 @@ class DishScorePropertiesTest {
         runner.withPropertyValues("restaurant.scores.Pancakes.7=10", "restaurant.scores.Chicken.12=5")
                 .run(context -> {
                     DishScoreProperties properties = context.getBean(DishScoreProperties.class);
-                    assertThat(properties.scores().get(Dish.Pancakes)).containsEntry(7, 10);
-                    assertThat(properties.scores().get(Dish.Chicken)).containsEntry(12, 5);
+                    assertThat(properties.scores().get(Dish.PANCAKES)).containsEntry(7, 10);
+                    assertThat(properties.scores().get(Dish.CHICKEN)).containsEntry(12, 5);
                 });
     }
 

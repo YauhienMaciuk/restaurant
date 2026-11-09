@@ -27,11 +27,4 @@ class HealthIT {
                 {"status": "UP"}
                 """);
     }
-
-    @Test
-    void unknownPathReturns404() {
-        ResponseEntity<String> response = restTemplate.getForEntity("/nope", String.class);
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-    }
 }

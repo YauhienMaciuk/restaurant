@@ -25,14 +25,14 @@ public class ApiExceptionHandler {
     private static final Logger log = LoggerFactory.getLogger(ApiExceptionHandler.class);
 
     private static final String ALLOWED_DISHES = Arrays.stream(Dish.values())
-            .map(Enum::name)
+            .map(Dish::label)
             .collect(Collectors.joining(", "));
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ApiError handleValidation(MethodArgumentNotValidException ex) {
         List<FieldViolation> violations = ex.getBindingResult().getFieldErrors().stream()
-                .map(ApiExceptionHandler::violation)
+                .map(ApiExceptionHandler::toViolation)
                 .sorted(Comparator.comparing(FieldViolation::field).thenComparing(FieldViolation::code))
                 .toList();
         log.warn("Rejected request, validation failed: {}", violations.stream()
@@ -50,12 +50,12 @@ public class ApiExceptionHandler {
         return new ApiError(ErrorCode.MALFORMED_REQUEST, "Request body is missing or is not valid JSON", null);
     }
 
-    private static FieldViolation violation(FieldError error) {
+    private static FieldViolation toViolation(FieldError error) {
         ErrorCode code = ErrorCode.fromName(error.getDefaultMessage()).orElse(ErrorCode.INVALID_VALUE);
-        return new FieldViolation(error.getField(), code, describe(code, error));
+        return new FieldViolation(error.getField(), code, messageFor(code, error));
     }
 
-    private static String describe(ErrorCode code, FieldError error) {
+    private static String messageFor(ErrorCode code, FieldError error) {
         return switch (code) {
             case TIME_REQUIRED -> "time is required, expected format HH:mm";
             case INVALID_TIME_FORMAT -> "time must be a valid time in HH:mm format";

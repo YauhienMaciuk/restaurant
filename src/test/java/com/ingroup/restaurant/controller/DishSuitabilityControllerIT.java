@@ -22,7 +22,7 @@ class DishSuitabilityControllerIT {
     @Autowired
     private TestRestTemplate restTemplate;
 
-    private ResponseEntity<String> post(String body) {
+    private ResponseEntity<String> postJson(String body) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         return restTemplate.postForEntity("/dish-suitability", new HttpEntity<>(body, headers), String.class);
@@ -31,7 +31,7 @@ class DishSuitabilityControllerIT {
     @ParameterizedTest
     @CsvSource({"09:30,Pancakes,7", "12:30,Chicken,5", "15:00,IceCream,3", "03:00,Pancakes,0", "23:00,IceCream,0"})
     void validRequestReturnsScore(String time, String dish, int score) {
-        ResponseEntity<String> response = post("""
+        ResponseEntity<String> response = postJson("""
                 {"time": "%s", "dish": "%s"}
                 """.formatted(time, dish));
 
@@ -43,7 +43,7 @@ class DishSuitabilityControllerIT {
 
     @Test
     void dishIsCaseInsensitive() {
-        ResponseEntity<String> response = post("""
+        ResponseEntity<String> response = postJson("""
                 {"time": "09:30", "dish": "icecream"}
                 """);
 
@@ -52,7 +52,7 @@ class DishSuitabilityControllerIT {
 
     @Test
     void unknownDishReturns400() {
-        ResponseEntity<String> response = post("""
+        ResponseEntity<String> response = postJson("""
                 {"time": "09:30", "dish": "Pizza"}
                 """);
 
@@ -74,7 +74,7 @@ class DishSuitabilityControllerIT {
 
     @Test
     void invalidTimeReturns400() {
-        ResponseEntity<String> response = post("""
+        ResponseEntity<String> response = postJson("""
                 {"time": "25:99", "dish": "Pancakes"}
                 """);
 
@@ -84,7 +84,7 @@ class DishSuitabilityControllerIT {
 
     @Test
     void missingFieldsReturn400() {
-        assertThat(post("{}").getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(postJson("{}").getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 
     @Test

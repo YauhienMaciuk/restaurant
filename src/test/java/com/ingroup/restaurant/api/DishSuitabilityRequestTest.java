@@ -71,7 +71,7 @@ class DishSuitabilityRequestTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"", "   "})
-    void blankDishIsRequired(String dish) {
+    void blankDishReportsDishRequired(String dish) {
         assertThat(validate("09:30", dish))
                 .extracting(ConstraintViolation::getMessage)
                 .containsExactly("DISH_REQUIRED");

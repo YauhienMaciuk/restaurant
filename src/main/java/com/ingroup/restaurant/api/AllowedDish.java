@@ -12,7 +12,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * The value must be the name of a {@link Dish}, ignoring case. A null or blank value is left to {@code @NotBlank}.
+ * The value must be the label of a {@link Dish}, ignoring case. A null or blank value is left to {@code @NotBlank}.
  */
 @Constraint(validatedBy = AllowedDish.Validator.class)
 @Target(ElementType.FIELD)
@@ -29,7 +29,7 @@ public @interface AllowedDish {
 
         @Override
         public boolean isValid(String value, ConstraintValidatorContext context) {
-            return value == null || value.isBlank() || Dish.parse(value).isPresent();
+            return value == null || value.isBlank() || Dish.fromName(value).isPresent();
         }
     }
 }

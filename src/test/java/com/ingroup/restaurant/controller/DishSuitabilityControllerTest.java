@@ -42,7 +42,7 @@ class DishSuitabilityControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.score").value(7));
 
-        verify(service).score(LocalTime.of(9, 30), Dish.Pancakes);
+        verify(service).score(LocalTime.of(9, 30), Dish.PANCAKES);
     }
 
     @ParameterizedTest

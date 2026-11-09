@@ -4,20 +4,29 @@ import java.util.Arrays;
 import java.util.Optional;
 
 public enum Dish {
-    Pancakes,
-    Chicken,
-    IceCream;
+    PANCAKES("Pancakes"),
+    CHICKEN("Chicken"),
+    ICE_CREAM("IceCream");
 
-    /**
-     * Lookup by name, ignoring case and surrounding whitespace.
-     */
-    public static Optional<Dish> parse(String value) {
-        if (value == null) {
+    private final String label;
+
+    Dish(String label) {
+        this.label = label;
+    }
+
+    /** The name clients use in requests, e.g. {@code IceCream}. */
+    public String label() {
+        return label;
+    }
+
+    /** Lookup by label, ignoring case and surrounding whitespace. */
+    public static Optional<Dish> fromName(String name) {
+        if (name == null) {
             return Optional.empty();
         }
-        String name = value.strip();
+        String stripped = name.strip();
         return Arrays.stream(values())
-                .filter(dish -> dish.name().equalsIgnoreCase(name))
+                .filter(dish -> dish.label.equalsIgnoreCase(stripped))
                 .findFirst();
     }
 }
