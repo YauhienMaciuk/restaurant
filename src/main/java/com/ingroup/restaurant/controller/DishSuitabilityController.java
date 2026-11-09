@@ -26,10 +26,11 @@ public class DishSuitabilityController {
 
     @PostMapping("/dish-suitability")
     public DishSuitabilityResponse score(@Valid @RequestBody DishSuitabilityRequest request) {
-        String time = request.time();
         Dish dish = Dish.fromName(request.dish()).orElseThrow(
                 () -> new IllegalStateException("Dish passed validation but cannot be parsed: " + request.dish())
         );
+
+        String time = request.time();
         int score = dishSuitabilityService.score(LocalTime.parse(time), dish);
 
         log.info("Dish suitability: dish={}, time={}, score={}", dish, time, score);
