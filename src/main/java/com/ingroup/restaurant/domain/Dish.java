@@ -14,12 +14,13 @@ public enum Dish {
         this.label = label;
     }
 
-    /** The name clients use in requests, e.g. {@code IceCream}. */
     public String label() {
         return label;
     }
 
-    /** Lookup by label, ignoring case and surrounding whitespace. */
+    /**
+     * Lookup by label, ignoring case and surrounding whitespace.
+     */
     public static Optional<Dish> fromName(String name) {
         if (name == null) {
             return Optional.empty();
