@@ -6,4 +6,3 @@ pluginManagement {
 }
 
 rootProject.name = "restaurant"
-include("restaurant-api")

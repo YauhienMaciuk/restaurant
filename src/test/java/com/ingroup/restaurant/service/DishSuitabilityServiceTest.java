@@ -1,14 +1,15 @@
 package com.ingroup.restaurant.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import com.ingroup.restaurant.api.Dish;
 import com.ingroup.restaurant.config.DishScoreProperties;
-import java.time.LocalTime;
-import java.util.Map;
+import com.ingroup.restaurant.domain.Dish;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+
+import java.time.LocalTime;
+import java.util.Map;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class DishSuitabilityServiceTest {
 

@@ -1,8 +1,8 @@
 package com.ingroup.restaurant.controller;
 
-import com.ingroup.restaurant.api.Dish;
 import com.ingroup.restaurant.api.DishSuitabilityRequest;
 import com.ingroup.restaurant.api.DishSuitabilityResponse;
+import com.ingroup.restaurant.domain.Dish;
 import com.ingroup.restaurant.service.DishSuitabilityService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;

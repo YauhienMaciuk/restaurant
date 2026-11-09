@@ -1,16 +1,17 @@
 package com.ingroup.restaurant.controller;
 
 import com.ingroup.restaurant.api.ApiError;
-import com.ingroup.restaurant.api.Dish;
 import com.ingroup.restaurant.api.ErrorCode;
 import com.ingroup.restaurant.api.FieldViolation;
+import com.ingroup.restaurant.domain.Dish;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.Arrays;
@@ -28,40 +29,40 @@ public class ApiExceptionHandler {
             .collect(Collectors.joining(", "));
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiError> handleValidation(MethodArgumentNotValidException ex) {
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiError handleValidation(MethodArgumentNotValidException ex) {
         List<FieldViolation> violations = ex.getBindingResult().getFieldErrors().stream()
-                .map(error -> violation(error.getField(), ErrorCode.valueOf(error.getDefaultMessage()), error.getRejectedValue()))
+                .map(ApiExceptionHandler::violation)
                 .sorted(Comparator.comparing(FieldViolation::field).thenComparing(FieldViolation::code))
                 .toList();
         log.warn("Rejected request, validation failed: {}", violations.stream()
                 .map(v -> v.field() + "=" + v.code())
                 .toList());
 
-        return badRequest(new ApiError(ErrorCode.VALIDATION_FAILED, "Request validation failed", violations));
+        return new ApiError(ErrorCode.VALIDATION_FAILED, "Request validation failed", violations);
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<ApiError> handleUnreadable(HttpMessageNotReadableException ex) {
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiError handleUnreadable(HttpMessageNotReadableException ex) {
         log.warn("Rejected request, body is missing or not valid JSON");
 
-        return badRequest(new ApiError(ErrorCode.MALFORMED_REQUEST, "Request body is missing or is not valid JSON", null));
+        return new ApiError(ErrorCode.MALFORMED_REQUEST, "Request body is missing or is not valid JSON", null);
     }
 
-    private static FieldViolation violation(String field, ErrorCode code, Object rejectedValue) {
-        return new FieldViolation(field, code, describe(code, rejectedValue));
+    private static FieldViolation violation(FieldError error) {
+        ErrorCode code = ErrorCode.fromName(error.getDefaultMessage()).orElse(ErrorCode.INVALID_VALUE);
+        return new FieldViolation(error.getField(), code, describe(code, error));
     }
 
-    private static String describe(ErrorCode code, Object rejectedValue) {
+    private static String describe(ErrorCode code, FieldError error) {
         return switch (code) {
             case TIME_REQUIRED -> "time is required, expected format HH:mm";
             case INVALID_TIME_FORMAT -> "time must be a valid time in HH:mm format";
-            case DISH_NOT_ALLOWED -> "dish '" + rejectedValue + "' is not allowed. Allowed dishes: " + ALLOWED_DISHES;
+            case DISH_NOT_ALLOWED ->
+                    "dish '" + error.getRejectedValue() + "' is not allowed. Allowed dishes: " + ALLOWED_DISHES;
             case DISH_REQUIRED -> "dish is required. Allowed dishes: " + ALLOWED_DISHES;
-            default -> throw new IllegalArgumentException("No field message for " + code);
+            default -> error.getField() + " " + error.getDefaultMessage();
         };
-    }
-
-    private static ResponseEntity<ApiError> badRequest(ApiError body) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
     }
 }

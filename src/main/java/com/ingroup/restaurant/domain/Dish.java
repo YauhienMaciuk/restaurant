@@ -1,4 +1,4 @@
-package com.ingroup.restaurant.api;
+package com.ingroup.restaurant.domain;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -8,12 +8,16 @@ public enum Dish {
     Chicken,
     IceCream;
 
-    /** Lookup by name, ignoring case and surrounding whitespace. */
+    /**
+     * Lookup by name, ignoring case and surrounding whitespace.
+     */
     public static Optional<Dish> parse(String value) {
         if (value == null) {
             return Optional.empty();
         }
         String name = value.strip();
-        return Arrays.stream(values()).filter(dish -> dish.name().equalsIgnoreCase(name)).findFirst();
+        return Arrays.stream(values())
+                .filter(dish -> dish.name().equalsIgnoreCase(name))
+                .findFirst();
     }
 }

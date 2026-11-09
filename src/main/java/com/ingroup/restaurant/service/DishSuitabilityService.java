@@ -1,7 +1,7 @@
 package com.ingroup.restaurant.service;
 
-import com.ingroup.restaurant.api.Dish;
 import com.ingroup.restaurant.config.DishScoreProperties;
+import com.ingroup.restaurant.domain.Dish;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;

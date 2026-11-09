@@ -1,17 +1,18 @@
 package com.ingroup.restaurant.api;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
-import java.util.Set;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+
+import java.util.Set;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class DishSuitabilityRequestTest {
 
