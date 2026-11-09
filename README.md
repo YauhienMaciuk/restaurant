@@ -88,7 +88,7 @@ To add a dish:
 - Scores are read at startup, so changing them needs a rebuild and restart. Live reload was left out to keep it simple.
 - The hour is what matters: minutes within the same hour score the same.
 - Error responses use stable codes, so clients do not depend on message text.
-- The API contract is published as an OpenAPI spec rather than a shared Java jar, so clients in any language can read it or generate code from it, and they don't depend on server code.
+- The API contract is an OpenAPI spec generated from the code (`/v3/api-docs`), so clients in any language can read it or generate a client from it.
 - Validation of the config at startup makes a bad score fail early rather than return wrong results.
 - `gradle.properties` raises the log4j, tomcat and jackson versions above the ones Spring Boot manages, to pick up security fixes. They can be removed when Spring Boot ships those versions.
 - Health is a plain endpoint, not Spring Boot Actuator, to match the required `{"status":"UP"}` with no extra dependency. In production I would use Actuator with separate liveness and readiness checks.
